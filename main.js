@@ -35,83 +35,100 @@ window.addEventListener('load', () => {
 })
 
 function DisplayTodos() {
-    const todoList = document.querySelector("#todo-list");
-    todoList.innerHTML = "";
-  
-    for (let i = todos.length - 1; i >= 0; i--) {
-      const todo = todos[i];
-  
-      const todoItem = document.createElement("div");
-      todoItem.classList.add("todo-item");
-  
-      const label = document.createElement("label");
-      const input = document.createElement("input");
-      const span = document.createElement("span");
-      const content = document.createElement("div");
-      const actions = document.createElement("div");
-      const edit = document.createElement("button");
-      const deleteButton = document.createElement("button");
-  
-      input.type = "checkbox";
-      input.checked = todo.done;
-      span.classList.add("bubble");
-      if (todo.category == "personal") {
-        span.classList.add("personal");
-      } else {
-        span.classList.add("business");
-      }
-      content.classList.add("todo-content");
-      actions.classList.add("actions");
-      edit.classList.add("edit");
-      deleteButton.classList.add("delete");
-  
-      content.innerHTML = `<input type="text" value="${todo.content}" readonly>`;
-      edit.innerHTML = "Edit";
-      deleteButton.innerHTML = "Delete";
-  
-      label.appendChild(input);
-      label.appendChild(span);
-      actions.appendChild(edit);
-      actions.appendChild(deleteButton);
-      todoItem.appendChild(label);
-      todoItem.appendChild(content);
-      todoItem.appendChild(actions);
-  
-      todoList.insertBefore(todoItem, todoList.firstChild);
-  
+  const todoList = document.querySelector("#todo-list");
+  todoList.innerHTML = "";
+
+  todos.forEach((todo) => {
+    const todoItem = document.createElement("div");
+    todoItem.classList.add("todo-item");
+
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    const span = document.createElement("span");
+    const content = document.createElement("div");
+    const actions = document.createElement("div");
+    const edit = document.createElement("button");
+    const deleteButton = document.createElement("button");
+    const createdAt = new Date(todo.createdAt);
+
+    input.type = "checkbox";
+    input.checked = todo.done;
+    span.classList.add("bubble");
+    if (todo.category == "personal") {
+      span.classList.add("personal");
+    } else {
+      span.classList.add("business");
+    }
+    content.classList.add("todo-content");
+    actions.classList.add("actions");
+    edit.classList.add("edit");
+    deleteButton.classList.add("delete");
+
+    content.innerHTML = `<input type="text" value="${todo.content}" readonly>`;
+    edit.innerHTML = "Edit";
+    deleteButton.innerHTML = "Delete";
+
+    label.appendChild(input);
+    label.appendChild(span);
+    actions.appendChild(edit);
+    actions.appendChild(deleteButton);
+    todoItem.appendChild(label);
+    todoItem.appendChild(content);
+    todoItem.appendChild(actions);
+
+    // Add the created-at span
+    const createdAtSpan = document.createElement("span");
+    createdAtSpan.classList.add("created-at");
+    createdAtSpan.textContent = `Created at: ${createdAt.toLocaleString()}`;
+    todoItem.appendChild(createdAtSpan);
+
+    todoList.appendChild(todoItem);
+
+    if (todo.done) {
+      todoItem.classList.add("done");
+    }
+
+    input.addEventListener("change", (e) => {
+      todo.done = e.target.checked;
+      localStorage.setItem("todos", JSON.stringify(todos));
+
       if (todo.done) {
         todoItem.classList.add("done");
+      } else {
+        todoItem.classList.remove("done");
       }
-  
-      input.addEventListener("change", (e) => {
-        todo.done = e.target.checked;
-        localStorage.setItem("todos", JSON.stringify(todos));
-  
-        if (todo.done) {
-          todoItem.classList.add("done");
-        } else {
-          todoItem.classList.remove("done");
-        }
-  
-        DisplayTodos();
-      });
-  
-      edit.addEventListener("click", (e) => {
-        const input = content.querySelector("input");
-        input.removeAttribute("readonly");
-        input.focus();
-        input.addEventListener("blur", (e) => {
-          input.setAttribute("readonly", true);
-          todo.content = e.target.value;
-          localStorage.setItem("todos", JSON.stringify(todos));
-          DisplayTodos();
-        });
-      });
-  
-      deleteButton.addEventListener("click", (e) => {
-        todos = todos.filter((t) => t != todo);
+
+      DisplayTodos();
+    });
+
+    edit.addEventListener("click", (e) => {
+      const input = content.querySelector("input");
+      input.removeAttribute("readonly");
+      input.focus();
+      input.addEventListener("blur", (e) => {
+        input.setAttribute("readonly", true);
+        todo.content = e.target.value;
         localStorage.setItem("todos", JSON.stringify(todos));
         DisplayTodos();
       });
-    }
-  }
+    });
+
+    deleteButton.addEventListener("click", (e) => {
+      todos = todos.filter((t) => t != todo);
+      localStorage.setItem("todos", JSON.stringify(todos));
+      DisplayTodos();
+    });
+  });
+
+  // CSS Flexbox layout to move actions and created-at to the far right corner
+  const todoItems = document.querySelectorAll(".todo-item");
+  todoItems.forEach((todoItem) => {
+    const actions = todoItem.querySelector(".actions");
+    const createdAt = todoItem.querySelector(".created-at");
+    todoItem.style.display = "flex";
+    todoItem.style.flexDirection = "row";
+    todoItem.style.justifyContent = "space-between";
+    actions.style.order = "1";
+    createdAt.style.order = "2";
+  });
+}
