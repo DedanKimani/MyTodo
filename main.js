@@ -74,13 +74,14 @@ function DisplayTodos() {
     actions.appendChild(deleteButton);
     todoItem.appendChild(label);
     todoItem.appendChild(content);
-    todoItem.appendChild(actions);
 
     // Add the created-at span
     const createdAtSpan = document.createElement("span");
     createdAtSpan.classList.add("created-at");
     createdAtSpan.textContent = `Created at: ${createdAt.toLocaleString()}`;
     todoItem.appendChild(createdAtSpan);
+
+    todoItem.appendChild(actions);
 
     todoList.appendChild(todoItem);
 
@@ -120,15 +121,4 @@ function DisplayTodos() {
     });
   });
 
-  // CSS Flexbox layout to move actions and created-at to the far right corner
-  const todoItems = document.querySelectorAll(".todo-item");
-  todoItems.forEach((todoItem) => {
-    const actions = todoItem.querySelector(".actions");
-    const createdAt = todoItem.querySelector(".created-at");
-    todoItem.style.display = "flex";
-    todoItem.style.flexDirection = "row";
-    todoItem.style.justifyContent = "space-between";
-    actions.style.order = "1";
-    createdAt.style.order = "2";
-  });
 }
